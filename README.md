@@ -4,9 +4,11 @@
     <br />
 	<a href="https://github.com/pystardust/ytfzf/stargazers"><img src="https://img.shields.io/github/stars/pystardust/ytfzf?color=orange&logo=github&style=flat-square"></a>
 	<a href="https://github.com/pystardust/ytfzf/graphs/contributors"><img src="https://img.shields.io/github/contributors/pystardust/ytfzf?style=flat-square"></a>
+	<img src="https://img.shields.io/static/v1?color=%231831ad&message=Euro20179&label=Maintainer&style=flat-square" alt="Maintainer: Euro20179">
 	<a href="https://github.com/pystardust/ytfzf/releases/tag/v1.1.1"><img src="https://img.shields.io/github/v/tag/pystardust/ytfzf?style=flat-square"> </a>
 	<a href="https://github.com/pystardust/ytfzf/commits/master"><img src="https://img.shields.io/github/commit-activity/m/pystardust/ytfzf?color=green&style=flat-square"></a>
 	<a href="https://discord.gg/kupWznHjRJ"><img src="https://img.shields.io/discord/815609275644117022?color=yellow&logo=discord&style=flat-square" alt="Discord"></a>
+	<a href="https://matrix.to/#/#ytfzf-chat:matrix.org"><img src="https://img.shields.io/static/v1?color=%230eb687&message=chat&logo=matrix&label=matrix&style=flat-square" alt="Discord"></a>
     <br />
     <br />
     <i>A POSIX script that helps you find Youtube videos (without API) and opens/downloads them using mpv/youtube-dl</i>
@@ -20,73 +22,173 @@
 <img src=.assets/ytfzf.gif width="100%">
 </p>
 
-## Fast installation
+---
 
-_This one-line installation does not support every OS, detail information for different OS can be found in the [here](docs/INSTALL.md)_
+# Table Of Contents
+
+* [`Dependencies`](#Dependencies)
+* [`Install`](#Install)
+* [`Features`](#Features)
+* [`Examples`](#Examples)
+* [`Configuration`](#Configuration)
+* [`Bugs`](#Bugs)
+* [`Contributing`](#Contributing)
+* [`Credits`](#Credits)
+
+---
+
+# Dependencies
+
+There are only 2 required dependencies, however the rest require some configuration before you can replace them.
+
+## Requried dependencies
+
+* [`jq`](https://github.com/stedolan/jq)
+* [`curl`](https://github.com/curl/curl)
+
+## Recommended dependencies
+
+* [`mpv`](https://github.com/mpv-player/mpv) (the default video and audio player)
+* [`fzf`](https://github.com/junegunn/fzf) (the default menu selection screen)
+
+## Optional dependencies
+
+* [`yt-dlp`](https://github.com/yt-dlp/yt-dlp) (for downloading)
+* [`dmenu`](https://tools.suckless.org/dmenu/) (only if using the -D option)
+* [`ueberzug`](https://github.com/seebye/ueberzug) (if using thumbnails (-t) on x11)
+    * If on wayland, or you do not want `ueberzug`, see the alternatives [below](#Alternative-Thumbnail-Viewers).
+    * To use an alternative include `--thumb-viewer=<alternative>` in the command when running ytfzf
+
+### Alternative Thumbnail Viewers
+| Program                                                                           | Wayland Support  |
+| :--                                                                               | :--              |
+| [`chafa`](https://github.com/hpjansson/chafa)                                     | &#9989;          |
+| [`catimg`](https://github.com/posva/catimg)                                       | &#9989;          |
+| [`imv`](https://git.sr.ht/~exec64/imv)                                            | &#9989;          |
+| [`mpv`](https://github.com/mpv-player/mpv)                                        | &#9989;          |
+| [`kitty`](https://github.com/kovidgoyal/kitty)                                    | &#9989;          |
+| [`swayimg`](https://github.com/artemsen/swayimg)                                  | only on `sway`   |
+
+# Install
+
+<a href="https://repology.org/metapackage/ytfzf">
+    <img src="https://repology.org/badge/vertical-allrepos/ytfzf.svg" alt="Repo status" align="right">
+</a>
+
+**if on `linux` and installed using make on version `2.0` or prior, run `sudo make uninstall-old` first**
+
+1. Install the dependencies listed [above](#Dependencies)
+2. Run the following commands
+```sh
+git clone https://github.com/pystardust/ytfzf
+cd ytfzf
+sudo make install doc
+```
+
+* If you wish to not install documentation (highly unrecommended) run `sudo make install` instead.
+
+* If you wish to install addons, run `sudo make addons`
+    * `YTFZF_SYSTEM_ADDONS_DIR` will point to `/usr/local/share/ytfzf/addons` even if you set `PREFIX` to something else
+    * If you use a different prefix, it would be smart to export `YTFZF_SYSTEM_ADDONS_DIR` to `$PREFIX/share/ytfzf/addons` in a shell startup file.
+
+* You may also install `ytfzf` through your package manager, as listed on the side.
+
+## Addons
+
+Addons are extra features that will not be as supported as everything built into `ytfzf` itself.
+
+Addons are located in `addons`, copy any addon to `~/.config/ytfzf/{addon-type}/{addon}`, and give it execute permissions.
+
+You may also just copy the entire addon folder type, eg: `cp -r addons/thumbnail-viewers ~/.config/ytfzf/`
+
+### Usage
+
+To use a scraper addon run `ytfzf -c <scraper> ...`
+
+To use a thumbnail-viewer addon run `ytfzf -T <viewer> ...`
+
+To use a interface addon run `ytfzf -i <interface> ...`
+
+To use a url-handler addon run `ytfzf -u <handler> ...`
+
+To use a sort-name addon run `ytfzf --sort-name=<sort-name> ...`
+
+To use an extension addon run `ytfzf -e <extension> ...`
+
+---
+
+# Features
+
+* Subscriptions
+* Thumbnails
+* Watch history
+* Search History
+* Downloading
+* Queueing multiple videos
+* Custom menus, and scrapers
+* Addon support
+
+---
+
+# Examples
+
+> Search with thumbnails
 
 ```sh
-curl -sL "https://raw.githubusercontent.com/pystardust/ytfzf/master/ytfzf" | sudo tee /usr/bin/ytfzf >/dev/null && sudo chmod 755 /usr/bin/ytfzf
+ytfzf -t <search>
 ```
-<sup>*requires cURL</sup>
 
-## Table of Contents
+> Use `dmenu` as the menu instead of `fzf`
 
-- [`Dependencies`](docs/INSTALL.md/#Dependencies)
-- [`Installation`](docs/INSTALL.md/#Installation-Options)
-- [`Usage Instruction`](docs/USAGE.md/#Usage-Instructions)
-- [`Configurations`](docs/USAGE.md/#Configurations)
-- [`Subscriptions`](docs/USAGE.md/#Subscriptions)
-- [`Update Log`](#Update-Log)
-- [`Examples`](#Examples)
-- [`Todo`](#Todo)
-- [`Bugs`](#Bugs)
+```sh
+ytfzf -D <search>
+```
 
-## Features
-- Subscriptions
-- Thumbnails
-- History
-- Download
-- Format selection
-- Queue multiple videos
+> Print the link of the selected video instead of playing it
 
-## Examples
-+  Search with Thumbnails
+```sh
+ytfzf -L <search>
+```
 
-	> Find and watch videos with thumbnail previews
+> Search Odysee instead of youtube
 
-       ytfzf -t <query>
+```sh
+ytfzf -cO <search>
+```
 
-	> Show all subscriptions with thumbnails (latest 10)
+---
 
-       ytfzf -St
+# Configuration
 
-+  You can use multiple options together, here are some examples
+Everything that is an option can also be configured in `~/.config/ytfzf/conf.sh`.
 
-	- Stream audio (music), and prompt as the music finishes
+In addition, the video player and other things may be changed here
 
-		  ytfzf -ml <query>
+Here is a [sample configuration](docs/conf.sh) (please dont use it)
 
-	- Download a video from your history
+For more information, see `ytfzf(5)` which should be installed, if it's not see [the wiki](https://github.com/pystardust/ytfzf/wiki).
 
-	      ytfzf -dH
+---
 
-	- Open using external menu in a certain format
+# Bugs
 
-	 	  ytfzf -fD
+* *dwm with swallow patch: Images don't render with ueberzug when looped (ie, option `-l`)*
+* *if thumbnails are not working `.Xauthority` might be causing it. Try deleting it and relogging into your computer.*
 
-+ _If you started watching a video and you wish to change format then
-first hit Q to save position and quit mpv, then choose your format using_
+# Contributing
 
-	  ytfzf -faH
+Feel free to contribute, and add your name to the credits, please use the development branch. For more information see [contributing](CONTRIBUTING.md)
 
-## Todo
+# Credits
 
-* [ ] Playlists
-* [ ] More sites
-* [x] Subscriptions
-* [x] Thumbnails
+| User           | Contributions                             | Donate|
+| :---           | :---                                      | :--- |
+| Pystardust    | [contributions](credits/pystardust.md)    ||
+| Euro20179     | [contributions](credits/euro20179.md)     | [donate](credits/euro20179.md#Donate) |
+| Simonhughxyz  | [contributions](credits/simonhughxyz.md)  ||
+| Jac-Zac       | [contributions](credits/jac-zac.md)       ||
+| Mudskipper875 | [contributions](credits/mudskipper875.md) ||
+| Gardockt | [contributions](credits/gardockt.md)||
+| qoheniac | [contributions](credits/qoheniac.md)||
+| mathisto | [contributions](credits/mathisto.md)||
 
-## Bugs
-
-* _dwm with swallow patch: Images don't render when looped (ie, option -l)_
-- _If thumbnails are not working `.Xauthority` might be causing it. Try deleting `.Xauthority` and relogging._
